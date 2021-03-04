@@ -1,0 +1,11 @@
+Spark Submit:
+
+spark-submit ../Spark_Streaming_WatermarkWindowOperations.py localhost 9999
+
+Netcat:
+
+nc -lk 9999
+
+Spark Streaming Kafka:
+
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0 ../KafkaStreamingFileConsumerFinal.py 

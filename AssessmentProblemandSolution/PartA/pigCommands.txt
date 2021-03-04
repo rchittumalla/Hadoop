@@ -1,0 +1,45 @@
+Queries :
+
+Q1. Load the data using the piggy bank jar file by skipping the header.  
+raw_data = LOAD '/user/jayantm/Batch43/CUTe/PartA/CUTe_dataset.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(';', 'NO_MULTILINE', 'UNIX', 'SKIP_INPUT_HEADER')
+             AS (YEAR:int, MONTH: int, UC:chararray,
+                 OAIRID:chararray, DAIRID:chararray,
+                 DDELAY:int, ADELAY:int, CANCELLED:int);
+
+Q2.  Print the first 10 records to the console. 
+limit_10 = LIMIT raw_data  10; 
+dump limit_10 
+
+Q3. Find the Average departure delay for each airport.
+group_by_departure_airport =  GROUP raw_data BY OAIRID;
+avg_delay_departure_airport = FOREACH group_by_departure_airport  GENERATE group ,AVG(raw_data.DDELAY) AS avg_departure_delay;
+dump avg_delay_departure_airport 
+
+Q4. Find the average arrival delay for each airport. 
+group_by_arrival_airport =  GROUP raw_data BY DAIRID;
+avg_delay_arrival_airport = FOREACH group_by_departure_airport  GENERATE group ,AVG(raw_data.ADELAY) as avg_arrival_delay;
+dump avg_delay_arrival_airport 
+
+Q5.  Find the 5 worst airports based on average arrival delay and average departure delay.
+
+sol 1 : average arrival delay
+avg_delay_departure_airport_ordered =  ORDER avg_delay_departure_airport BY avg_departure_delay DESC;
+worst_departures = LIMIT avg_delay_departure_airport_ordered 5;
+dump worst_departures 
+
+sol 2 : average departure delay
+avg_delay_arrival_airport_ordered =  ORDER avg_delay_arrival_airport BY avg_arrival_delay DESC;
+worst_arrivals = LIMIT avg_delay_arrival_airport_ordered 5;
+dump worst_arrivals 
+
+Q6. Perform joins on the raw data with the average arrival delay for the relevant arrival and departure airports. 
+join_arrival_delay = JOIN raw_data BY OAIRID, avg_delay_departure_airport BY group;
+join_both_delay = JOIN join_arrival_delay BY DAIRID, avg_delay_arrival_airport BY group;
+
+Go store data into HDFS : 
+STORE raw_data INTO '/user/2075B43/raw_data' USING PigStorage('\t');
+STORE limit_10 INTO '/user/2075B43/top10records' USING PigStorage('\t');
+STORE worst_arrivals INTO '/user/2075B43/worst_arrival_airports' USING PigStorage('\t');
+STORE worst_departures INTO '/user/2075B43/worst_departure_airports' USING PigStorage('\t');
+STORE join_arrival_delay INTO '/user/2075B43/join_arrival_delay' USING PigStorage('\t');
+STORE join_both_delay INTO '/user/2075B43/join_both_delay' USING PigStorage('\t');

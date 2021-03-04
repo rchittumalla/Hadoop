@@ -1,0 +1,5 @@
+101	AI	someone101	2015.04.06	AI is awsome
+102	ML	someone101	2016.01.14	I am trying to learn ML
+103	Stats	someone102	2015.01.20	Stats is hard to learn!
+104	CNN	someone103	2016.03.06	Its alien to me
+

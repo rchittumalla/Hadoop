@@ -1,0 +1,9 @@
+
+
+ hdfs dfs -copyToLocal '/user/jayantm/Batch43/CUTe/PartB/Task1/'
+
+flume-ng agent --conf ./conf/ -f conf/flumeconf.properties -n cuteAgent
+
+
+
+ hdfs dfs -copyToLocal '/user/jayantm/Batch43/CUTe/PartB/Task3/SQL_dataset.csv'

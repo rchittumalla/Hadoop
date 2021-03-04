@@ -1,0 +1,25 @@
+create ‘employee_2075’,’personal’,’professional’
+
+put 'employee_2075','1','personal:name','raju'
+put 'employee_2075','1','personal data:city','hyderabad'
+put 'employee_2075','1','professional:designation','manager'
+put 'employee_2075','1','professional data:salary','50000'
+
+
+ scan 'employee_2075'
+
+put 'employee_2075','1','personal:city','Delhi'
+
+
+ moveToLocal /user/jayantm/uber/Batch43/HistoricalData C:\Users\Ramesh\Desktop\Data Science\Hadoop
+
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.columns=HBASE_ROW_KEY,info:title,info:author,info:date,content:post employee_2075  /user/2075B43/bulkload.txt 
+
+
+ps -ef | grep jupyter | grep 2075B43
+kill -9 pid
+
+nc -lk 12075
+
+spark submit 

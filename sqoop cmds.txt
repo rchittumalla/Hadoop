@@ -1,0 +1,157 @@
+Objective: Import data from mysql database to HDFS using SQOOP.
+1. Full Import from a database (all tables)
+2. Incremental imports.
+
+## Initial import - this imports all 6 tables from mysql to HDFS. (each table's data will be loaded into a directory)
+
+1. Sqoop import - execute below command on terminal
+sqoop job \
+--create initialimport \
+-- import-all-tables \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--warehouse-dir '/user/manasm/datasets/employeesdb/' \
+-m 1
+
+sqoop job --exec initialimport
+
+
+hdfs dfs -cat /user/manasm/datasets/employeesdb/departments/* | wc -l
+9
+hdfs dfs -cat /user/manasm/datasets/employeesdb/dept_emp/* | wc -l
+331603
+hdfs dfs -cat /user/manasm/datasets/employeesdb/dept_manager/* | wc -l
+24
+hdfs dfs -cat /user/manasm/datasets/employeesdb/employees/* | wc -l
+300024
+hdfs dfs -cat /user/manasm/datasets/employeesdb/salaries/* | wc -l
+2844047
+hdfs dfs -cat /user/manasm/datasets/employeesdb/titles/* | wc -l
+443308
+
+--------- incremental / Delta Loads ---------
+
+#### import only newly added/updated rows.
+
+sqoop job \
+--create inc_imp_emp \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table employees \
+--incremental append \
+--check-column emp_no \
+--last-value 300024 \
+--target-dir '/user/manasm/datasets/employeesdb/employees/' \
+-m 1
+
+sqoop job --exec inc_imp_emp
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/employees/* | wc -l
+310024
+
+-----
+
+sqoop job \
+--create inc_imp_dept \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table departments \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/manasm/datasets/employeesdb/departments/' \
+-m 1 \
+--merge-key dept_no
+
+sqoop job --exec inc_imp_dept
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/departments/* | wc -l
+10
+
+-----
+
+sqoop job \
+--create inc_imp_deptemp \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table dept_emp \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/manasm/datasets/employeesdb/dept_emp/' \
+--merge-key seq_no \
+--split-by seq_no
+
+sqoop job --exec inc_imp_deptemp
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/dept_emp/* | wc -l
+341603
+-----
+sqoop job \
+--create inc_imp_deptmgr \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table dept_manager \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/manasm/datasets/employeesdb/dept_manager/' \
+--merge-key seq_no \
+--split-by seq_no
+
+sqoop job --exec inc_imp_deptmgr
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/dept_manager/* | wc -l
+25
+
+-----
+
+sqoop job \
+--create inc_imp_sal \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table salaries \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/manasm/datasets/employeesdb/salaries/' \
+--merge-key seq_no \
+--split-by seq_no
+
+sqoop job --exec inc_imp_sal
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/salaries/* | wc -l
+2854047
+
+-----
+
+sqoop job \
+--create inc_imp_titles \
+-- import \
+--connect jdbc:mysql://v.insofe.edu.in:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/manasm/sqoop_pwd \
+--table titles \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/manasm/datasets/employeesdb/titles/' \
+--merge-key seq_no \
+--split-by seq_no
+
+sqoop job --exec inc_imp_titles
+## Record counts after incremental load
+hdfs dfs -cat /user/manasm/datasets/employeesdb/titles/* | wc -l
+453308
+

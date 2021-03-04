@@ -1,0 +1,95 @@
+export PACKAGES="graphframes:graphframes:0.5.0-spark2.1-s_2.11" 
+export PYSPARK_SUBMIT_ARGS="--packages ${PACKAGES} pyspark-shell"
+
+
+Spark GraphFrames Schema
+
+Airports Schema:
+
+
+airportsDataSchema = StructType([
+StructField("airportID", IntegerType(), True),
+StructField("airportName", StringType(), True),
+StructField("city", StringType(), True),
+StructField("country", StringType(), True),
+StructField("IATA", StringType(), True),
+StructField("ICAO", StringType(), True),
+StructField("latitude", DoubleType(), True),
+StructField("longitude", DoubleType(), True), 
+StructField("altitude", IntegerType(), True),
+StructField("timezone", IntegerType(), True),
+StructField("dst", StringType(), True),
+StructField("tzDBTimezone", StringType(), True),
+StructField("type", StringType(), True),
+StructField("source", StringType(), True)])
+
+Departure Delay Schema:
+
+
+departureDelaysSchema = StructType([
+StructField("flightDate", StringType(), True),
+StructField("originAirportID", IntegerType(), True),
+StructField("origin", StringType(), True),
+StructField("originCity", StringType(), True),
+StructField("originState", StringType(), True),
+StructField("destAirportID", IntegerType(), True),
+StructField("destination", StringType(), True),
+StructField("destinationCity", StringType(), True),
+StructField("destinationState", StringType(), True),
+StructField("depDelayInMinutes", DoubleType(), True), 
+StructField("distanceInMiles", DoubleType(), True)])
+
+
+
+
+Spark Graphframes Dataset description
+
+Dataset Descriptions
+Airports data - airports.dat - OpenFlights: Airport, airline and route data : https://openflights.org/data.html
+
+Airport ID Unique OpenFlights identifier for this airport.
+
+Name Name of airport. May or may not contain the City name. 
+City Main city served by airport. May be spelled differently from Name. 
+Country Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
+
+IATA 3-letter IATA code. Null if not assigned/unknown. 
+ICAO 4-letter ICAO code - Null if not assigned. 
+Latitude Decimal degrees, usually to six significant digits. Negative is South, positive is North. 
+Longitude Decimal degrees, usually to six significant digits. Negative is West, positive is East. 
+Altitude In feet. 
+Timezone Hours offset from UTC. Fractional hours are expressed as decimals, eg. India is 5.5. 
+DST Daylight savings time. 
+One of E (Europe), A (US/Canada), S (South America), O (Australia), Z (New Zealand), N (None) or U (Unknown). 
+See also: Help: Time
+
+Tz database time zone Timezone in "tz" (Olson) format, eg. "America/Los_Angeles".
+
+Type Type of the airport. 
+Value "airport" for air terminals, 
+"station" for train stations, 
+"port" for ferry terminals and 
+"unknown" if not known. 
+In airports.csv, only type=airport is included.
+
+Source Source of this data. 
+"OurAirports" for data sourced from OurAirports, 
+"Legacy" for old data not matched to OurAirports (mostly DAFIF), 
+"User" for unverified user contributions. 
+In airports.csv, only source=OurAirports is included.
+
+The data is UTF-8 (Unicode) encoded.
+
+Departure Delays Data - departureDelays.csv Source: United States Department of Transportation: Bureau of Transportation Statistics (TranStats) https://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time April 2018 Data
+
+flightDate Flight Date (yyyymmdd) 
+originAirportID Origin Airport, Airport ID. An identification number assigned by US DOT to identify a unique airport. 
+origin Origin Airport. 
+originCity Origin Airport, City Name. 
+originState Origin Aiport, State Code. 
+destAirportID Destination Airport, Airport ID. An identification number assigned by US DOT to identify a unique airport. 
+destination Destination Airport. 
+destinationCity Destination Airport, City Name. 
+destinationState Destination Airport, State Code. 
+depDelayInMinutes Difference in minutes between scheduled and actual departure time. Early departures set to 0. 
+distanceInMiles Distance between Airports (in miles)

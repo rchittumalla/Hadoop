@@ -1,0 +1,3 @@
+hadoop jar /usr/hdp/2.6.1.0-129/hadoop-mapreduce/hadoop-streaming.jar -input /user/rameshm/MR/Input -output /user/rameshm/MR/Output -mapper wordcount_mapper.py -reducer wordcount_reducer.py -file /home/rameshm/Lab/PythonWC/wordcount_mapper.py -file /home/rameshm/Lab/PythonWC/wordcount_reducer.py
+
+

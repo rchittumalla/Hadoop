@@ -1,0 +1,121 @@
+sqoop job \
+--create initialimport \
+-- import-all-tables \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--warehouse-dir '/user/2072B43/datasets/employessdb/' \
+-m 1
+
+sqoop job --exec initialimport
+
+echo -n "insofe_password"
+
+
+sqoop job \
+--create inc_imp_emp1 \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table employees \
+--incremental append \
+--check-column emp_no \
+--last-value 300024 \
+--target-dir '/user/2072B43/datasets/employessdb/employees/' \
+-m 1
+
+sqoop job --exec inc_imp_emp1
+
+sqoop job \
+--create inc_imp_dept \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table departments \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/2072B43/datasets/employessdb/departments/' \
+-m 1 \
+--merge-key dept_no
+
+hdfs dfs -cat /user/2072B43/datasets/employessdb/departments/* | wc -l
+
+
+sqoop job \
+--create inc_imp_deptemp1 \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table dept_emp \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/2072B43/datasets/employessdb/dept_emp/' \
+--merge-key seq_no \
+--split-by seq_no
+
+
+sqoop job --exec inc_imp_deptemp1
+
+
+sqoop job \
+--create inc_imp_deptmgr \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table dept_manager \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/2072B43/datasets/employessdb/dept_manager/' \
+--merge-key seq_no \
+--split-by seq_no
+
+sqoop job --exec inc_imp_deptmgr
+
+sqoop job \
+--create inc_imp_sal \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table salaries \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/2072B43/datasets/employessdb/salaries/' \
+--merge-key seq_no \
+--split-by seq_no
+
+--2844047
+
+
+sqoop job --exec inc_imp_sal
+hdfs dfs -cat /user/2072B43/datasets/employessdb/salaries/pa* | wc -l
+---2854047
+
+
+sqoop job \
+--create inc_imp_titles \
+-- import \
+--connect jdbc:mysql://172.16.0.232:3306/insofe_employeesDB \
+--username insofeadmin \
+--password-file /user/2072B43/pwd1.txt \
+--table titles \
+--incremental lastmodified \
+--check-column last_modified \
+--last-value "2013-01-28 23:59:59" \
+--target-dir '/user/2072B43/datasets/employessdb/titles/' \
+--merge-key seq_no \
+--split-by seq_no
+
+--443308
+
+sqoop job --exec inc_imp_titles
+
+--453308
